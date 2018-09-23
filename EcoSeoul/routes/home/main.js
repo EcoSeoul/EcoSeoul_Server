@@ -11,7 +11,8 @@ router.get('/:user_idx', async (req, res) => {
 
     let toady_year = parseInt(moment().format('YYYY'));
     let today_month = parstInt(moment().format('MM'));
-    let standard_month = today_month - 1;   //이전달의 사용량을 기준으로 하기 때문에
+    let today = (toady_year - 2000) * 12 + today_month;
+    let standard_month = today - 1;   //이전달의 사용량을 기준으로 하기 때문에
 
     if (!user_idx) {
         res.status(400).send({
@@ -19,11 +20,11 @@ router.get('/:user_idx', async (req, res) => {
             message : "Null Value : User Index"
         });
     } else {
-        let selectPastQuery = 'SELECT * FROM Usage WHERE user_idx = ? and use_year = ? and use_month = ?';
-        let selectPastResult = await db.queryParam_Arr(selectPastQuery, [user_idx, toady_year - 1, standard_month]);
+        let selectPastQuery = 'SELECT * FROM Usage WHERE user_idx = ? and use_month_int = ?';
+        let selectPastResult = await db.queryParam_Arr(selectPastQuery, [user_idx, standard_month]);
 
-        let selectPresentQuery = 'SELECT * FROM Usage WHERE user_ids = ? and use_year = ? and use_month = ?';
-        let selectPresentResult = await db.queryParam_Arr(selectPresentQuery, [user_idx, toady_year, standard_month]);
+        let selectPresentQuery = 'SELECT * FROM Usage WHERE user_ids = ? and use_month_int = ?';
+        let selectPresentResult = await db.queryParam_Arr(selectPresentQuery, [user_idx, standard_month]);
 
         if (!selectPastResult || !selectPresentResult) {
             res.status(500).send({
@@ -58,30 +59,45 @@ router.get('/:user_idx', async (req, res) => {
                 max_month -= 12;
             }
 
-            let selectMonthQuery = "";
-            let selectMonthResult = "";
+            let min = user_join_date;
+            let max = max_month;
+
+            if (user_join_date > max_month) {
+                min = max_month;
+                max = user_join_date;
+            }
+
+            
             let totalCarbonResult = new Array();
+            let totalCarbon = 0;
+            let i = 0;
+            let j = 0;
 
-            // if (user_join_date <= max_month <= 12) {
-            //     if (user_join_date <= standard_month < max_month) {
-            //         let size = 0;
-            //         for (let i = user_join_date; i < standard_month; i++) {
-            //             selectMonthQuery = 'SELECT use_carbon FROM Usage WHERE user_idx = ? and use_month = ?';
-            //             selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, i]);
+            if (standard_month < min) {
+                i = ((toady_year - 1) - 2000) * 12 + max;
+                j = ((toady_year - 2) - 2000) * 12 + max;
+            } else if (min < standard_month < max) {
+                i = (toady_year - 2000) * 12 + min;
+                j = ((toady_year - 1) - 2000) * 12 + max;
+            } else {
+                i = 0;
+                j = 0;
+            }
 
-            //             totalCarbonResult[size++] = selectMonthResult.use_carbon;
-            //         }
-            //     } else if (max_month <= standard_month || standard_month < user_join_date) {
-                    
-            //     }
+            console.log("falge_month_int" + i);
 
-            // } else {
-            //     if ((user_join_date <= standard_month) || (standard_month < max_month)) {
+            for (; i < today - 1; i++) {
+                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ? ORDER BY use_month_int ASC';
+                let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, i]);
 
-            //     } else if (max_month <= standard_month < user_join_date) {
+                totalCarbon += parseInt(selectMonthResult[0].use_carbon);
+                totalCarbonResult.add(selectMonthResult);                   
+            }
 
-            //     }
-            // } 
+           
+
+            
+            
 
             //바토드와 보유 마일리지 보여주기
             let selectUserInfoQuery = 'SELECT user_barcodenum, user_milage FROM User WHERE user_idx = ?';

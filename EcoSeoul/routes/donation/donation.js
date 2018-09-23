@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (rea, res) => {
     let org_idx = req.body.org_idx;
+    let org_name = req.body.org_name;
     let user_idx = req.body.user_idx;
     let donation_milage = req.body.donation_milage;
     let milage_date = moment().format('YYYY-MM-DD');
@@ -45,9 +46,10 @@ router.post('/', async (rea, res) => {
             });
         } else {
             let new_user_milage = user_milage - donation_milage;
+            let milage_usage = org_name + "에 " + toString(donation_milage) + " 기부";
 
             let insertMilageUsageQuery = 'INSERT INTO Milage (user_idx, milage_withdraw, milage_date, milage_usage, org_idx) VALUES ( ?, ?, ?, ?, ?)';
-            let insertMilageUsageResult = await db.queryParam_Arr(insertMilageUsageQuery, (user_idx, donation_milage, milage_date, donation_milage, org_idx));
+            let insertMilageUsageResult = await db.queryParam_Arr(insertMilageUsageQuery, (user_idx, donation_milage, milage_date, milage_usage, org_idx));
 
             let updateUserInfoQuery = 'UPDATE User SET user_milage = ? WHERE user_idx = ?';
             let updateUserInfoResult = await db.queryParam_Arr(updateUserInfoQuery, [new_user_milage, user_idx]);
