@@ -20,7 +20,7 @@ router.get('/', async(req, res) => {
                   message : "Server"
               });
           } else { 
-              res.status(201).send({
+              res.status(200).send({
                   message  : "Ok"
               });
           }

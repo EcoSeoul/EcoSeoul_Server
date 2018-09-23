@@ -7,4 +7,4 @@ router.use('/franchise_gu',franchisegu);
 const listview = require('./franchise_listview.js');
 router.use('/franchise_listview',listview);
 
-moudle.exports = router;
+module.exports = router;

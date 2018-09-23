@@ -21,4 +21,4 @@ router.get('/:frc_idx',async(req,res)=> {
 })
 
 
-module.exprts = router;
+module.exports = router;

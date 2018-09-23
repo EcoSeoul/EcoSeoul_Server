@@ -15,7 +15,7 @@ router.get('/', async(req, res)=>{
             message : "Server Error"
         });
     }else{
-        res.status(201).send({
+        res.status(200).send({
             message : "OK",
             data : [
                 {best_list : bestResult},

@@ -19,7 +19,7 @@ router.get('/:user_idx',async(req, res)=> {
                 message : "Server error"
             });
         }else{
-            res.status(201).send({
+            res.status(200).send({
                 message : "ok",
                 data : [{mytext_list : getmytextList}]
             });

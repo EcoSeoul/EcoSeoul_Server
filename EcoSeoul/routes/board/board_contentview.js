@@ -14,7 +14,22 @@ router.get('/:board_idx',async(req, res)=> {
             message : "NULL VALUE"
         });
     }else{
-       // let getContentQuery = 'SELECT DISTINCT board_idx, board_title, board_content,board_date, (SELECT count(like_idx) FROM Thumb WHERE Board.board_idx = Thumb.board_idx ) as King,(SELECT  count(comment_idx) FROM Comment WHERE Board.board_idx = Comment.board_idx) as Cntcount '
+      let boardcontentQuery = `SELECT DISTINCT * FROM eco.Board WHERE board_idx = ?`;
+      let boardcontentResult = await db.queryParam_Arr(boardcontentQuery,[board_idx]);
+
+      if(!boardcontentResult){
+          res.status(500).send({
+              message : "Server Error"
+          });
+      }else{
+          res.status(200).send({
+              status : "True",
+              message : "Success",
+              Data : boardcontentResult
+          });
+      }
     }
 
-})
+});
+
+module.exports = router;
