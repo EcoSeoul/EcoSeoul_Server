@@ -98,7 +98,7 @@ router.get('/:user_idx', async (req, res) => {
             console.log("falg_month_int" + i);
 
             for (; i < today; i++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ? ORDER BY use_month_int ASC';
+                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, i]);
 
                 totalCarbon += parseInt(selectMonthResult[0].use_carbon);
@@ -106,7 +106,7 @@ router.get('/:user_idx', async (req, res) => {
             }
 
             for (; j <= pastMax; j++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ? ORDER BY use_month_int ASC';
+                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, j]);
 
                 if (j <= past) {

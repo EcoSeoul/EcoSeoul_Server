@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('/../../module/pool.js');
+const db = require('../../module/pool.js');
 
 
 router.get('/:user_idx',async(req, res)=> {
