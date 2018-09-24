@@ -16,8 +16,9 @@ router.get('/:board_idx',async(req, res)=> {
     }else{
       let boardcontentQuery = `SELECT DISTINCT * FROM eco.Board WHERE board_idx = ?`;
       let boardcontentResult = await db.queryParam_Arr(boardcontentQuery,[board_idx]);
-
-      if(!boardcontentResult){
+      let commentQuery = `SELECT DISTINCT * FROM eco.Comment WHERE board_idx =?`;
+      let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
+      if(!boardcontentResult || !commentResult){
           res.status(500).send({
               message : "Server Error"
           });
@@ -25,7 +26,8 @@ router.get('/:board_idx',async(req, res)=> {
           res.status(200).send({
               status : "True",
               message : "Success",
-              Data : boardcontentResult
+              board_Result: {boardcontentResult},
+              comment_Result : {commentResult}
           });
       }
     }
