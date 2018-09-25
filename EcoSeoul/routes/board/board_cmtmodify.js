@@ -5,7 +5,7 @@ const db = require('../../module/pool.js');
 
 
 router.post('/',async(req, res)=> {
-    let usr_idx = req.body.usr_idx;
+    let user_idx = req.body.user_idx;
     let cmt_idx = req.body.cmt_idx;
     let selectcmtQuery = `SELECT user_idx FROM eco.Comment WHERE user_idx = ?`
     let selectcmtResult = await db.queryParam_Arr(selectcmtQuery,[user_idx]);
@@ -23,7 +23,7 @@ router.post('/',async(req, res)=> {
             });
         }else{
             let cmt_content = req.body.cmt_content;
-            let updateQuery = `UPADATE eco.Comment SET cmt_content =? WHERE cmt_idx =?`
+            let updateQuery = `UPDATE eco.Comment SET cmt_content =? WHERE cmt_idx =?`
             let updateResult = await db.queryParam_Arr(updateQuery,[cmt_content,cmt_idx]);
 
             if(!cmt_content){
