@@ -18,7 +18,7 @@ router.post('/', async(req, res)=> {
             message : "NUll value"
         });
     }else{
-        let requestQuery = 'INSERT INTO Board (board_title, board_content,board_date,user_idx) VALUES (?,?,?,?)'
+        let requestQuery = 'INSERT INTO eco.Board (board_title, board_content,board_date,user_idx) VALUES (?,?,?,?)'
         let requestResult = await db.queryParam_Arr(requestQuery, [board_title,board_content,currentTime,user_idx]);
     
     if(!requestResult){
