@@ -12,7 +12,8 @@ router.get('/', async(req, res) => {
         });
     } else {
         res.status(200).send({
-            message  : "Ok"
+            message  : "Ok",
+            gu_Result :  guResult
         });
     }
 });
