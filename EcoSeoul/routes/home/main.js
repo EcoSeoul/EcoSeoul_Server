@@ -9,11 +9,13 @@ const calc = require('../../module/calc.js');
 router.get('/:user_idx', async (req, res) => {
     let user_idx  = req.params.user_idx;
 
-    let toady_year = parseInt(moment().format('YYYY'));
-    let today_month = parstInt(moment().format('MM'));
+    let toady_year = 2019;//parseInt(moment().format('YYYY'));
+    let today_month = 2;//parseInt(moment().format('MM'));
+    console.log("toady year : " + toady_year + " / month : " + today_month);
     let today = (toady_year - 2000) * 12 + today_month;
     let past = (toady_year - 1 - 2000) * 12 + today_month;
-    let standard_month = today - 1;   //이전달의 사용량을 기준으로 하기 때문에
+    let month_int_today = (toady_year - 2000) * 12 + today_month - 1;
+    let month_int_past = (toady_year - 1 - 2000) * 12 + today_month - 1;
 
     if (!user_idx) {
         res.status(400).send({
@@ -21,52 +23,62 @@ router.get('/:user_idx', async (req, res) => {
             message : "Null Value : User Index"
         });
     } else {
-        let selectPastQuery = 'SELECT * FROM Usage WHERE user_idx = ? and use_month_int = ?';
-        let selectPastResult = await db.queryParam_Arr(selectPastQuery, [user_idx, standard_month]);
+        user_idx = parseInt(user_idx);
+        //console.log("user_idx : " + user_idx + ", today : " + month_int_today + ", past : " + month_int_past);
+       
+        let selectUsageQuery = 'SELECT * FROM eco.Usage WHERE user_idx = ? AND (use_month_int = ? OR use_month_int = ?) ORDER BY use_month_int ASC';
+        let selectUsageResult = await db.queryParam_Arr(selectUsageQuery, [user_idx, month_int_past, month_int_today]);
 
-        let selectPresentQuery = 'SELECT * FROM Usage WHERE user_ids = ? and use_month_int = ?';
-        let selectPresentResult = await db.queryParam_Arr(selectPresentQuery, [user_idx, standard_month]);
-
-        if (!selectPastResult || !selectPresentResult) {
+        if (!selectUsageResult) {
             res.status(500).send({
                 status : "false",
                 message : "Internal Server Error : Select Error"
             });
         } else {
-            let pastData = selectPastResult[0].use_elec;
-            let presentData = selectPresentResult[0].use_elec;
+            let pastData = selectUsageResult[0].use_elec;
+            let presentData = selectUsageResult[1].use_elec;
             let usageData = new Object();
 
             usageData.elec = await calc.percentage(pastData, presentData);
+            //console.log(usageData.elec);
 
-            pastData = selectPastResult[0].use_water;
-            presentData = selectPresentResult[0].use_water;
+            pastData = selectUsageResult[0].use_water;
+            presentData = selectUsageResult[1].use_water;
 
             usageData.water = await calc.percentage(pastData, presentData);
+            //console.log(usageData.water);
 
-            pastData = selectPastResult[0].use_gas;
-            presentData = selectPresentResult[0].use_gas;
+            pastData = selectUsageResult[0].use_gas;
+            presentData = selectUsageResult[1].use_gas;
 
             usageData.gas = await calc.percentage(pastData, presentData);
+            //console.log(usageData.gas);
 
             //기간별 탄소 배출량 구하기
             let selectJoinDateQuery = 'SELECT user_join_date FROM User WHERE user_idx = ?';
             let selectJoinDateResult = await db.queryParam_Arr(selectJoinDateQuery, [user_idx]);
 
             let user_join_date = selectJoinDateResult[0].user_join_date;    //사용자가 가입한 달
+            let user_join_month = 9;//user_join_date.getMonth() + 1;
 
-            let max_month = user_join_date + 6;
+            console.log("user_join_month : " + user_join_month);
+
+
+            let max_month = user_join_month + 6;
             if (max_month > 12) {
                 max_month -= 12;
             }
 
-            let min = user_join_date;
+            let min = user_join_month;
             let max = max_month;
 
-            if (user_join_date > max_month) {
+            
+            if (user_join_month > max_month) {
                 min = max_month;
-                max = user_join_date;
+                max = user_join_month;
             }
+
+            console.log("min : " + min + ", max : " + max);
 
             
             let totalCarbonResult = new Array();
@@ -77,52 +89,69 @@ router.get('/:user_idx', async (req, res) => {
             let j = 0;
             let pastMax = 0;    //전영도 구할 때 반복문을 어디까지 돌릴지
             let term = new Array();
+            let standard_month = today_month - 1;
+            if (standard_month < 1) {
+                standard_month = 12;
+            }
 
-            if (standard_month < min) {
+            console.log("standard_month : " + standard_month);
+            if ((1 <= standard_month) && (standard_month < min)) {    //해가 넘거감
+                console.log("here1");
                 i = ((toady_year - 1) - 2000) * 12 + max;
                 j = ((toady_year - 2) - 2000) * 12 + max;
                 term[0] = max;
                 term[1] = min;
-                pastMax = min;
-            } else if (min < standard_month < max) {
+                pastMax = (toady_year - 1 - 2000) * 12 + min;
+            }else if ((min <= standard_month) && (standard_month < max)) {
+                console.log("here2");
                 i = (toady_year - 2000) * 12 + min;
-                j = ((toady_year - 1) - 2000) * 12 + max;
+                j = ((toady_year - 1) - 2000) * 12 + min;
                 term[0] = min;
                 term[1] = max;
-                pastMax = max;
+                pastMax = ((toady_year - 1) - 2000) * 12 + max;
+            } else if ((max <= standard_month) && (standard_month <= 12)) {
+                console.log("here3");
+                i = (toady_year - 2000) * 12 + max;
+                j = ((toady_year - 1) - 2000) * 12 + max;
+                term[0] = max;
+                term[1] = min;
+                pastMax = (toady_year - 2000) * 12 + min;
             } else {
                 i = 0;
                 j = 0;
             }
 
-            console.log("falg_month_int" + i);
+            console.log("falg_month_int : " + i + ", past_flag : " + j + ", today : " + today + ", past : " + past + ", pastMax : " + pastMax);
 
             for (; i < today; i++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ?';
+                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, i]);
 
-                totalCarbon += parseInt(selectMonthResult[0].use_carbon);
-                totalCarbonResult.add(selectMonthResult);                   
-            }
+                console.log(selectMonthResult);
 
-            for (; j <= pastMax; j++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM Usage WHERE user_idx = ? and user_month_int = ?';
+                totalCarbon += parseInt(selectMonthResult[0].use_carbon);
+                totalCarbonResult.push(selectMonthResult[0]);                   
+            }
+            console.log();
+            for (; j < pastMax; j++) {
+                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, j]);
+
+                console.log(selectMonthResult);
 
                 if (j <= past) {
                     pastTotalCarbon += parseInt(selectMonthResult[0].use_carbon);
                 }
-                
-                pastTotalCarbonResult.add(selectMonthResult); 
+                pastTotalCarbonResult.push(selectMonthResult); 
             }
-
+            console.log("total : " + totalCarbon + " / " + pastTotalCarbon)
             usageData.carbon = await calc.percentage(totalCarbon, pastTotalCarbon);
 
             //바코드와 보유 마일리지 보여주기
-            let selectUserInfoQuery = 'SELECT user_barcodenum, user_milage FROM User WHERE user_idx = ?';
+            let selectUserInfoQuery = 'SELECT user_barcodenum, user_mileage FROM eco.User WHERE user_idx = ?';
             let selectUserInfoResult = await db.queryParam_Arr(selectUserInfoQuery, [user_idx]);
 
-            if (!totalCarbonResult || selectUserInfoResult) {
+            if (!totalCarbonResult || !selectUserInfoResult) {
                 res.status(500).send({
                     message : "Invail Server Error : Get Data"
                 });

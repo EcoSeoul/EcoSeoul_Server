@@ -7,12 +7,12 @@ module.exports = {							// 두 개의 메소드 module화
         if (past > present) {   //절약
             result = {
                 up_down : 0,
-                percentage : present / past * 100
+                percentage : Math.round(present / past * 100)
             }
         } else if (past < present) {
             result = {     //과소비
                 up_down : 1,
-                percentage : past / present * 100
+                percentage : Math.round(past / present * 100)
                 
             }
         } else {
