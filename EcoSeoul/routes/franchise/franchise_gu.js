@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../../module/pool.js');
 
 router.get('/', async(req, res) => {
-    let guQuery = 'SELECT DISTINCT gu_idx FROM Gu';
+    let guQuery = 'SELECT DISTINCT * FROM eco.Gu';
     let guResult = await db.queryParam_None(guQuery);
 
     if(!guResult){
