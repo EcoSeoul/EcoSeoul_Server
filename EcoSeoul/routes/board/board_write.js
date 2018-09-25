@@ -8,9 +8,9 @@ const moment = require('moment');
 
 router.post('/', async(req, res)=> {
     let board_title = req.body.board_title;
-    let boaard_content = req.body.boaard_content;
+    let board_content = req.body.board_content;
     let currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-    let user_idx = req.body.userIdx;
+    let user_idx = req.body.user_idx;
     
 
     if(!user_idx){
