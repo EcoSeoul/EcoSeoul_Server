@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../../module/pool.js');
 
 
-router.put('/',async(req, res)=>{
+router.post('/',async(req, res)=>{
     let board_idx = req.body.board_idx;
     let user_idx = req.body.user_idx;
 
