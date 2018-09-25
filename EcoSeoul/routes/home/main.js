@@ -9,8 +9,8 @@ const calc = require('../../module/calc.js');
 router.get('/:user_idx', async (req, res) => {
     let user_idx  = req.params.user_idx;
 
-    let toady_year = 2019;//parseInt(moment().format('YYYY'));
-    let today_month = 2;//parseInt(moment().format('MM'));
+    let toady_year = parseInt(moment().format('YYYY'));
+    let today_month = parseInt(moment().format('MM'));
     console.log("toady year : " + toady_year + " / month : " + today_month);
     let today = (toady_year - 2000) * 12 + today_month;
     let past = (toady_year - 1 - 2000) * 12 + today_month;
@@ -59,7 +59,7 @@ router.get('/:user_idx', async (req, res) => {
             let selectJoinDateResult = await db.queryParam_Arr(selectJoinDateQuery, [user_idx]);
 
             let user_join_date = selectJoinDateResult[0].user_join_date;    //사용자가 가입한 달
-            let user_join_month = 9;//user_join_date.getMonth() + 1;
+            let user_join_month = user_join_date.getMonth() + 1;
 
             console.log("user_join_month : " + user_join_month);
 
