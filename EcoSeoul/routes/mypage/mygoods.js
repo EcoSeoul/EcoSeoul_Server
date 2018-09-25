@@ -12,8 +12,8 @@ router.get('/:user_idx', async (req, res) => {
             message : "Null Value : user index"
         });
     } else {
-        let selectGoodsQuery = 'SELECT s.goods_name, m.mileage_withdraw, m.milage_date, m.milage_usage FROM shop s JOIN milage m ON s.goods_idx = m.goods_idx WHERE m.user_idx = ? and m.org_idx = ?';
-        let selectGoodsResult = await db.queryParam_Arr(selectGoodsQuery, [user_idx, null]);
+        let selectGoodsQuery = 'SELECT s.goods_name, m.mileage_withdraw, m.mileage_date, m.mileage_usage FROM shop s JOIN Mileage m ON s.goods_idx = m.goods_idx WHERE m.user_idx = ?';
+        let selectGoodsResult = await db.queryParam_Arr(selectGoodsQuery, [user_idx]);
 
         if (!selectGoodsResult) {
             res.status(500).send({

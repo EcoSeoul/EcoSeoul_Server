@@ -8,10 +8,16 @@ const home = require('./home/index.js');
 router.use('/home', home);
 
 const board = require('./board/index.js');
-router.use('/board',board);
+router.use('/board', board);
 
-const franchise =require('./franchise/index.js');
-router.use('/franchise',franchise);
+const franchise = require('./franchise/index.js');
+router.use('/franchise', franchise);
+
+const donation = require('./donation/index.js');
+router.use('/donation', donation);
+
+const shop = require('./shop/index.js');
+router.use('/shop', shop);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

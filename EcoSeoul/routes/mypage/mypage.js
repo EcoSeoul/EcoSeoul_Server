@@ -12,7 +12,7 @@ router.get('/:user_idx', async (req, res) => {
             message : "Null Value : user index"
         });
     } else {
-        let selectUserQuery = 'SELECT user_idx, user_milage, user_money FROM user WHERE user_idx = ?';
+        let selectUserQuery = 'SELECT user_idx, user_mileage, user_money FROM User WHERE user_idx = ?';
         let selectUserResult = await db.queryParam_Arr(selectUserQuery, [user_idx]);
 
         if (!selectUserResult) {
@@ -40,18 +40,21 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
             message : "Null Value"
         });
     } else {
-        let selectUsageQuery = "";
-        let seleceUsageResult = "";
+        user_idx = parseInt(user_idx);
+        eco_value = parseInt(eco_value);
+
+        console.log("idx : " + user_idx + ", value : " + eco_value);
+        let selectMileageQuery = "";
 
         if (eco_value == 0) {
-            selectUsageQuery = 'SELECT * FROM Milage WHERE user_idx = ?';
-            selectUsageResult = await db.queryParam_Arr(selectUsageQuery, [user_idx]);
+            selectMileageQuery = 'SELECT * FROM Mileage WHERE user_idx = ?';
         } else {
-            selectUsageQuery = 'SELECT * FROM Money WHERE user_idx = ?';
-            selectUsageResult = await db.queryParam_Arr(selectUsageQuery, [user_idx]);
+            selectMileageQuery = 'SELECT * FROM Money WHERE user_idx = ?';
         }
 
-        if (!seleceUsageResult) {
+        let selectMileageResult = await db.queryParam_Arr(selectMileageQuery, [user_idx]);
+
+        if (!selectMileageResult) {
             res.status(500).send({
                 status : "false",
                 message : "Internal Server Error : Select Usage"
@@ -60,15 +63,15 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
             let used_milage = 0;
 
             if (eco_value == 0) {
-                for (let i = 0; i < selectMilageResult.length; i++) {
-                    if (selectMilageResult[i].mileage_withdraw != null) {
-                        used_milage += selectMilageResult[i].mileage_withdraw;
+                for (let i = 0; i < selectMileageResult.length; i++) {
+                    if (selectMileageResult[i].mileage_withdraw != null) {
+                        used_milage += selectMileageResult[i].mileage_withdraw;
                     }
                 }
             } else {
-                for (let i = 0; i < selectMilageResult.length; i++) {
-                    if (selectMilageResult[i].money_withdraw != null) {
-                        used_milage += selectMilageResult[i].money_withdraw;
+                for (let i = 0; i < selectMileageResult.length; i++) {
+                    if (selectMileageResult[i].money_withdraw != null) {
+                        used_milage += selectMileageResult[i].money_withdraw;
                     }
                 }
             }
@@ -76,7 +79,7 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
             res.status(200).send({
                 status : "true",
                 message : "Successfully Get Data",
-                milage_total_usage : selectUsageResult,
+                milage_total_usage : selectMileageResult,
                 used_milage : used_milage
             });
         }
