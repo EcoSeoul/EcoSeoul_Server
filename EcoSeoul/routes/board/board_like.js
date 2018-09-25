@@ -1,11 +1,9 @@
 const express = require('express');
-const router = express.Router();
-const crypto = require('crypto-promise');  
+const router = express.Router(); 
 const db = require('../../module/pool.js');
 
 
-router.post('/',async(req, res)=>{
-
+router.put('/',async(req, res)=>{
     let board_idx = req.body.board_idx;
     let user_idx = req.body.user_idx;
 

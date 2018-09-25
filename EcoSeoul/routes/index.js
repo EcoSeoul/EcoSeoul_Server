@@ -10,6 +10,9 @@ router.use('/home', home);
 const board = require('./board/index.js');
 router.use('/board', board);
 
+const comment = require('./comment/index.js');
+router.use('/comment', comment);
+
 const franchise = require('./franchise/index.js');
 router.use('/franchise', franchise);
 

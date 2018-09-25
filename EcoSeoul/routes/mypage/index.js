@@ -10,6 +10,9 @@ router.use('/mygoods', mygoods);
 const mydonation = require('./mydonation.js');
 router.use('/mydonation', mydonation);
 
+const myboard = require('./myboard.js');
+router.use('/myboard', myboard);
+
 const ecocard = require('./ecocard.js');
 router.use('/ecocard', ecocard);
 

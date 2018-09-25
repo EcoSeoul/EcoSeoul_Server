@@ -2,23 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../module/pool.js');
 
-router.get('/', async(req, res) => {
-    let guQuery = 'SELECT DISTINCT * FROM eco.Gu';
-    let guResult = await db.queryParam_None(guQuery);
-
-    if(!guResult){
-        res.status(500).send({
-            message : "Internal Server Server"
-        });
-    } else {
-        res.status(200).send({
-            message  : "Ok",
-            gu_Result :  guResult
-        });
-    }
-});
-
-
 router.get('/:gu_idx', async(req,res) =>{
   let gu_idx = req.params.gu_idx;
 
@@ -41,6 +24,23 @@ router.get('/:gu_idx', async(req,res) =>{
           });
       }
   }
-})
+});
+
+router.get('/detail/:frc_idx',async(req,res)=> {
+    let frc_idx = req.params.frc_idx;
+    let selectFrcQuery = 'SELECT * FROM eco.franchise WHERE frc_idx = ?'
+    let selectFrcResult = await db.queryParam_Arr(selectFrcQuery, [frc_idx]);
+
+    if(!selectFrcResult){
+        res.status(500).send({
+            message : "Server ERRoR"
+        });
+    }else{
+        res.status(200).send({
+            message : "OK",
+            data : [{frc_information : selectFrcResult}]
+        });
+    }
+});
 
 module.exports = router;

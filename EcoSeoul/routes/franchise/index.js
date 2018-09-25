@@ -1,10 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const franchisegu = require('./franchise_gu.js');
-router.use('/franchise_gu',franchisegu);
-
-const listview = require('./franchise_listview.js');
-router.use('/franchise_listview',listview);
+const franchise = require('./franchise.js');
+router.use('/',franchise);
 
 module.exports = router;
