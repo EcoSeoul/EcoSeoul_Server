@@ -24,7 +24,7 @@ router.post('/',async(req, res)=>{
         }else{
             let board_title = req.body.board_title;
             let board_content = req.body.board_content;
-            let updateQuery = `UPDATE eco.Board SET board_title = ? board_content = ? WHERE board_idx = ?`
+            let updateQuery = `UPDATE eco.Board SET board_title = ?, board_content = ? WHERE board_idx = ?`
             let updateResult = await db.queryParam_Arr(updateQuery,[board_title, board_content, board_idx]);
 
             if(!board_title || !board_content){

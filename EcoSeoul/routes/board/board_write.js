@@ -8,9 +8,9 @@ const moment = require('moment');
 
 router.post('/', async(req, res)=> {
     let board_title = req.body.board_title;
-    let boaard_content = req.body.boaard_content;
+    let board_content = req.body.board_content;
     let currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-    let user_idx = req.body.userIdx;
+    let user_idx = req.body.user_idx;
     
 
     if(!user_idx){
@@ -18,7 +18,7 @@ router.post('/', async(req, res)=> {
             message : "NUll value"
         });
     }else{
-        let requestQuery = 'INSERT INTO Board (board_title, board_content,board_date,user_idx) VALUES (?,?,?,?)'
+        let requestQuery = 'INSERT INTO eco.Board (board_title, board_content,board_date,user_idx) VALUES (?,?,?,?)'
         let requestResult = await db.queryParam_Arr(requestQuery, [board_title,board_content,currentTime,user_idx]);
     
     if(!requestResult){

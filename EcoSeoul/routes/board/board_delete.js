@@ -14,7 +14,7 @@ router.post('/',async(req, res)=> {
             message : "NUll value"
         });
     }else{
-        let deleteQuery = `DELETE FROM Board WHERE board_idx =? and user_idx = ?`
+        let deleteQuery = `DELETE FROM eco.Board WHERE board_idx =? and user_idx = ?`
         let deleteResult = await db.queryParam_Arr(deleteQuery,[board_idx,user_idx]);
 
         if(!deleteResult){

@@ -29,5 +29,7 @@ router.use('/board_mytext',boardmytext);
 const boardwrite = require('./board_write.js');
 router.use('/board_write',boardwrite);
 
+const boardlist = require('./board_list.js');
+router.use('/board_list',boardlist);
 
 module.exports = router;

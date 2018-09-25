@@ -22,26 +22,31 @@ router.post('/',async(req, res)=>{
             });
         }else{
             if(likeResult == 0 ){
-                let insertQuery = `INSERTINTO eco.Thumb (board_idx,user_idx,like_flag) VALUES (?,?,1)`;
+                let insertQuery = `INSERT INTO eco.Thumb (board_idx,user_idx,like_flag) VALUES (?,?,1)`;
                 let insertResult = await db.queryParam_Arr(insertQuery,[board_idx, user_idx]);
 
 
-                let mQuery = `UPDATE Board SET board_like = board_like+1 WHERE board_idx= ?`;
-                let mReuslt = await db.queryParam_Arr(mQuery,[board_idx]);
-
-                if(!insertResult || !mReuslt){
+                if(!insertResult){
                     res.status(500).send({
                         message : "server Err"
                     });
                 }else{
+                    let mQuery = `UPDATE eco.Board SET board_like = board_like+1 WHERE board_idx= ?`;
+                    let mResult = await db.queryParam_Arr(mQuery,[board_idx]);
+                    if(!mResult){
+                        res.status(500).send({
+                            message : "like flag 1  SERVER err "
+                        })
+                    }else{
                     res.status(201).send({
                         message : "ok",
                         flag : "1"
                     });
                 }
             }
+            }
             else if(likeResult[0].like_flag ==1){
-                let mQuery = `UPDATE Board SET board_like = board_like-1 WHERE board_idx =?`;
+                let mQuery = `UPDATE eco.Board SET board_like = board_like-1 WHERE board_idx =?`;
                 let mReuslt = await db.queryParam_Arr(mQuery,[board_idx]);
 
 
