@@ -4,19 +4,38 @@ const db = require('../../module/pool.js');
 const moment = require('moment');
 
 //게시글 상세보기
-router.get('/:board_idx',async(req, res)=> {
+router.get('/:board_idx/:user_idx', async(req, res)=> {
     let board_idx = req.params.board_idx;
+    let user_idx = parseInt(req.params.user_idx);
 
     if(!board_idx){
         res.status(400).send({
             message : "NULL VALUE"
         });
     }else{
-      let boardcontentQuery = `SELECT DISTINCT * FROM eco.Board WHERE board_idx = ?`;
-      let boardcontentResult = await db.queryParam_Arr(boardcontentQuery,[board_idx]);
+      let boardContentQuery = `SELECT DISTINCT * FROM eco.Board WHERE board_idx = ?`;
+      let boardContentResult = await db.queryParam_Arr(boardContentQuery,[board_idx]);
+
       let commentQuery = `SELECT DISTINCT * FROM eco.Comment WHERE board_idx =?`;
       let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
-      if(!boardcontentResult || !commentResult){
+
+      for (let i = 0; i < boardContentResult.length; i++) {
+          if (boardContentResult[i].user_idx == user_idx) {
+              boardContentResult[i].writer_check = true;
+          } else {
+            boardContentResult[i].writer_check = false;
+          }
+      }
+
+      for (let i = 0; i < commentResult.length; i++) {
+        if (commentResult[i].user_idx == user_idx) {
+            commentResult[i].writer_check = true;
+        } else {
+            commentResult[i].writer_check = false;
+        }
+    }
+
+      if(!boardContentResult || !commentResult){
           res.status(500).send({
               message : "Server Error"
           });
@@ -24,8 +43,8 @@ router.get('/:board_idx',async(req, res)=> {
           res.status(200).send({
               status : "True",
               message : "Success",
-              board_Result: {boardcontentResult},
-              comment_Result : {commentResult}
+              board_Result: boardContentResult,
+              comment_Result : commentResult
           });
       }
     }
