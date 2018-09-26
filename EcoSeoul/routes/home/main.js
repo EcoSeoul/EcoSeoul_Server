@@ -96,21 +96,18 @@ router.get('/:user_idx', async (req, res) => {
 
             console.log("standard_month : " + standard_month);
             if ((1 <= standard_month) && (standard_month < min)) {    //해가 넘거감
-                console.log("here1");
                 i = ((toady_year - 1) - 2000) * 12 + max;
                 j = ((toady_year - 2) - 2000) * 12 + max;
                 term[0] = max;
                 term[1] = min;
                 pastMax = (toady_year - 1 - 2000) * 12 + min;
             }else if ((min <= standard_month) && (standard_month < max)) {
-                console.log("here2");
                 i = (toady_year - 2000) * 12 + min;
                 j = ((toady_year - 1) - 2000) * 12 + min;
                 term[0] = min;
                 term[1] = max;
                 pastMax = ((toady_year - 1) - 2000) * 12 + max;
             } else if ((max <= standard_month) && (standard_month <= 12)) {
-                console.log("here3");
                 i = (toady_year - 2000) * 12 + max;
                 j = ((toady_year - 1) - 2000) * 12 + max;
                 term[0] = max;
@@ -124,25 +121,25 @@ router.get('/:user_idx', async (req, res) => {
             console.log("falg_month_int : " + i + ", past_flag : " + j + ", today : " + today + ", past : " + past + ", pastMax : " + pastMax);
 
             for (; i < today; i++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
+                let selectMonthQuery = 'SELECT use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, i]);
 
                 console.log(selectMonthResult);
 
                 totalCarbon += parseInt(selectMonthResult[0].use_carbon);
-                totalCarbonResult.push(selectMonthResult[0]);                   
+                totalCarbonResult.push(selectMonthResult[0].use_carbon);                   
             }
             console.log();
             for (; j < pastMax; j++) {
-                let selectMonthQuery = 'SELECT use_month_int, use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
+                let selectMonthQuery = 'SELECT use_carbon FROM eco.Usage WHERE user_idx = ? and use_month_int = ?';
                 let selectMonthResult = await db.queryParam_Arr(selectMonthQuery, [user_idx, j]);
 
                 console.log(selectMonthResult);
 
-                if (j <= past) {
+                if (j < past) {
                     pastTotalCarbon += parseInt(selectMonthResult[0].use_carbon);
                 }
-                pastTotalCarbonResult.push(selectMonthResult); 
+                pastTotalCarbonResult.push(selectMonthResult[0].use_carbon); 
             }
             console.log("total : " + totalCarbon + " / " + pastTotalCarbon)
             usageData.carbon = await calc.percentage(totalCarbon, pastTotalCarbon);
@@ -160,6 +157,7 @@ router.get('/:user_idx', async (req, res) => {
                     term : term,
                     carbon : totalCarbonResult,
                     totalCarbon : totalCarbon,
+                    pastCarbon : pastTotalCarbonResult,
                     pastTotalCarbon : pastTotalCarbon,
                     usageData : usageData,
                     userInfo : selectUserInfoResult,

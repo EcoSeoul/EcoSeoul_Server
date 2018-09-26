@@ -22,6 +22,9 @@ module.exports = {							// 두 개의 메소드 module화
             }
         }
 
+        result.past = past;
+        result.present = present;
+
         return result;
 
     }
