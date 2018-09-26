@@ -156,9 +156,7 @@ router.get('/:user_idx', async (req, res) => {
                 res.status(200).send({
                     term : term,
                     carbon : totalCarbonResult,
-                    totalCarbon : totalCarbon,
                     pastCarbon : pastTotalCarbonResult,
-                    pastTotalCarbon : pastTotalCarbon,
                     usageData : usageData,
                     userInfo : selectUserInfoResult,
                     message : "Successfully Get Data"
