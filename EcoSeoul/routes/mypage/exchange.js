@@ -10,7 +10,6 @@ router.post('/', async (req, res) =>{
 
    if (!user_idx || !exchange) {
        res.status(400).send({
-           status : "false",
            message : "Null Value : user index and how much"
        });
    } else {

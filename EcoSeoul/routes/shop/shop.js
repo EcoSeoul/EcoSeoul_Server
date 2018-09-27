@@ -10,12 +10,10 @@ router.get('/', async (req, res) => {
 
     if (!selectShopResult) {
         res.status(500).send({
-            status : "false",
             message : "Invaild Server Error"
         });
     } else {
         res.status(200).send({
-            status : "true",
             message : "Successfully Get Data",
             shopData : selectShopResult
         });

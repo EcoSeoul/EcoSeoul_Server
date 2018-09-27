@@ -8,7 +8,6 @@ router.get('/:user_idx', async (req, res) => {
 
     if (!user_idx) {
         res.status(400).send( {
-            status : "false",
             message : "Null Value : user index"
         });
     } else {
@@ -17,12 +16,10 @@ router.get('/:user_idx', async (req, res) => {
 
         if (!selectUserResult) {
             res.status(500).send({
-                status : "false",
                 message : "Internal Server Error : select user"
             });
         } else {
             res.status(200).send({
-                status : "true",
                 message : "Successfully select data",
                 result : selectUserResult
             });
@@ -36,7 +33,6 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
 
     if (!user_idx || !eco_value) {
         res.status(400).send({
-            status : "false",
             message : "Null Value"
         });
     } else {
@@ -56,7 +52,6 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
 
         if (!selectMileageResult) {
             res.status(500).send({
-                status : "false",
                 message : "Internal Server Error : Select Usage"
             });
         } else {
@@ -77,7 +72,6 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
             }
 
             res.status(200).send({
-                status : "true",
                 message : "Successfully Get Data",
                 milage_total_usage : selectMileageResult,
                 used_milage : used_milage

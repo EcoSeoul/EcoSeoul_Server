@@ -9,7 +9,6 @@ router.post('/', async (req, res) => {
 
     if (!user_id || !user_pw) {
         res.status(400).send({
-            status : "false",
             message : "Null Value"
         });
     } else {

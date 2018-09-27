@@ -8,7 +8,6 @@ router.get('/:user_idx', async (req, res) => {
 
     if (!user_idx) {
         res.status(400).send({
-            status : "false",
             message : "Null Value : user index"
         });
     } else {
@@ -20,12 +19,10 @@ router.get('/:user_idx', async (req, res) => {
 
         if (!selectDonationsResult) {
             res.status(500).send({
-                status : "false",
                 message : "Internal Server Error : Select Organizations"
             });
         } else {
             res.status(200).send({
-                status : "true",
                 message : "Successfully Get Organizations Data",
                 myTotalMileage : selectMileageResult[0].user_mileage,
                 myDonations : selectDonationsResult

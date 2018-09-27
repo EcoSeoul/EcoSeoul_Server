@@ -9,7 +9,6 @@ router.post('/', async (req, res) =>{
 
     if (!user_idx || !user_barcodenum) {
         res.status(400).send({
-            status : "false",
             message : "Null value : user index and barcodenum"
         });
     } else {
@@ -18,12 +17,10 @@ router.post('/', async (req, res) =>{
 
         if (insertBarcodeNumResult) {
             res.status(500).send({
-                status : "false", 
                 message : "Internal Server Error : Insert BarcodeNum"
             });
         } else {
             res.status(200).send({
-                status : "true",
                 message : "Successfully Insert BarcodeNumber"
             });
         }

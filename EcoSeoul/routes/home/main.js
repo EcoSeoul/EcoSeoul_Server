@@ -19,7 +19,6 @@ router.get('/:user_idx', async (req, res) => {
 
     if (!user_idx) {
         res.status(400).send({
-            status : "false",
             message : "Null Value : User Index"
         });
     } else {
@@ -31,7 +30,6 @@ router.get('/:user_idx', async (req, res) => {
 
         if (!selectUsageResult) {
             res.status(500).send({
-                status : "false",
                 message : "Internal Server Error : Select Error"
             });
         } else {

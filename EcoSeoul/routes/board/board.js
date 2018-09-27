@@ -13,10 +13,10 @@ router.get('/:board_idx/:user_idx', async(req, res)=> {
             message : "NULL VALUE"
         });
     }else{
-      let boardContentQuery = `SELECT DISTINCT * FROM eco.Board WHERE board_idx = ?`;
+      let boardContentQuery = `SELECT b.*, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE board_idx = ?`;
       let boardContentResult = await db.queryParam_Arr(boardContentQuery,[board_idx]);
 
-      let commentQuery = `SELECT DISTINCT * FROM eco.Comment WHERE board_idx =?`;
+      let commentQuery = `SELECT c.*, u.user_ID FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ?`;
       let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
 
       for (let i = 0; i < boardContentResult.length; i++) {
@@ -41,7 +41,6 @@ router.get('/:board_idx/:user_idx', async(req, res)=> {
           });
       }else{
           res.status(200).send({
-              status : "True",
               message : "Success",
               board_Result: boardContentResult,
               comment_Result : commentResult
