@@ -21,7 +21,7 @@ router.get('/:user_idx',async(req, res)=> {
         }else{
             res.status(200).send({
                 message : "ok",
-                data : [{mytext_list : getmytextList}]
+                mytext_list : getmytextList
             });
         }
     }

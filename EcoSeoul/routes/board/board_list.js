@@ -17,10 +17,8 @@ router.get('/', async(req, res)=>{
     }else{
         res.status(200).send({
             message : "OK",
-            data : [
-                {best_list : bestResult},
-                {all_list : viewResult}
-            ]
+            best_list : bestResult,
+            all_list : viewResult
         });
     }
 });

@@ -38,7 +38,7 @@ router.get('/detail/:frc_idx',async(req,res)=> {
     }else{
         res.status(200).send({
             message : "OK",
-            data : [{frc_information : selectFrcResult}]
+            frc_information : selectFrcResult
         });
     }
 });
