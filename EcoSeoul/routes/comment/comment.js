@@ -23,19 +23,11 @@ router.post('/',async(req, res)=>{
             res.status(500).send({
                 message : "Server Error"
             });
-        }else {
-            let addQuery = `UPDATE eco.Board SET board_cmtnum = board_cmtnum+1 WHERE board_idx = ?`;
-            let addResult = await db.queryParam_Arr(addQuery,[board_idx]);
-            if(!addResult){
-                res.status(500).send({
-                    message : "cmtnum add Server Error"
-                });
-            }else{
-            res.status(201).send({
+        } else {
+            res.status(200).send({
                 message : " OK",
             });
         }
-    }
     }
 
 });
