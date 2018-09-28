@@ -16,11 +16,6 @@ router.get('/:board_idx/:user_idx', async(req, res)=> {
       let boardContentQuery = `SELECT b.*, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE board_idx = ?`;
       let boardContentResult = await db.queryParam_Arr(boardContentQuery,[board_idx]);
 
-      let countCommentQuery = 'SELECT count(c.cmt_idx) "board_cmtnum" FROM eco.Comment as c JOIN eco.Board as b ON c.board_idx = b.board_idx WHERE c.board_idx = ?';
-      let countCommentResult = await db.queryParam_Arr(countCommentQuery, [board_idx]);
-      
-      boardContentResult[0].board_cmtnum = countCommentResult[0].board_cmtnum;
-
       let commentQuery = `SELECT c.*, u.user_ID FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ?`;
       let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
 
