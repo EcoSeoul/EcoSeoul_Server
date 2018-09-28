@@ -25,7 +25,7 @@ router.post('/', upload.single('goods_img'), async (req, res) => {
             message : "Null Value"
         });
     } else {
-        let insertGoodsQuery = 'INSERT INTO eco.shop (goods_name, goods_price, goods_content, goods_company ,goods_img) VALUES (?, ?, ?, ?, ?)';
+        let insertGoodsQuery = 'INSERT INTO eco.shop (goods_name, goods_price, goods_content, goods_company, goods_img) VALUES (?, ?, ?, ?, ?)';
         let insertGoodsResult = await db.queryParam_Arr(insertGoodsQuery, [goods_name, goods_price, goods_content, goods_company , goods_img]);
 
         if (!insertGoodsResult) {
