@@ -35,7 +35,7 @@ router.get('/:goods_idx', async (req, res) => {
 
         } else {
             res.status(200).send({
-                massage : "Successfully Get Data",
+                message : "Successfully Get Data",
                 shopDetail : selectDetailResult
             });
         }
