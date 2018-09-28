@@ -5,7 +5,7 @@ const db = require('../../module/pool.js');
 const moment = require('moment');
 
 router.get('/', async (req, res) => {
-    let selectShopQuery = 'SELECT goods_idx, goods_name, goods_img FROM shop';
+    let selectShopQuery = 'SELECT goods_idx, goods_name, goods_img FROM eco.shop';
     let selectShopResult = await db.queryParam_None(selectShopQuery);
 
     if (!selectShopResult) {
@@ -28,7 +28,7 @@ router.get('/:goods_idx', async (req, res) => {
             message : "Null Value"
         });
     } else {
-        let selectDetailQuery = 'SELECT * FROM shop WHERE goods_idx = ?';
+        let selectDetailQuery = 'SELECT * FROM eco.shop WHERE goods_idx = ?';
         let selectDetailResult = await db.queryParam_Arr(selectDetailQuery, [goods_idx]);
 
         if (!selectDetailResult) {
