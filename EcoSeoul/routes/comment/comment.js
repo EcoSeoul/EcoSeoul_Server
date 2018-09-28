@@ -18,8 +18,16 @@ router.post('/',async(req, res)=>{
     }else {
         let registerQuery  = 'INSERT INTO eco.Comment (cmt_date,cmt_content,user_idx,board_idx) VALUES (?,?,?,?)';
         let registerResult = await db.queryParam_Arr(registerQuery,[cmt_date,cmt_content,user_idx,board_idx]);
+
         console.log(user_idx, board_idx, cmt_content,cmt_date);
-        if(!registerResult){
+
+        let countCommentQuery = 'SELECT count(c.cmt_idx) cmt_cnt FROM eco.Comment as c WHERE c.board_idx = ?';
+        let countCommentResult = await db.queryParam_Arr(countCommentQuery, [board_idx]);
+
+        let updateboardQuery = 'UPDATE eco.Board SET board_cmtnum = ? WHERE board_idx = ?';
+        let updateboardResult = await db.queryParam_Arr(updateboardQuery, [countCommentResult[0].cmt_cnt, board_idx]);
+
+        if(!registerResult || !updateboardResult){
             res.status(500).send({
                 message : "Server Error"
             });
@@ -93,9 +101,13 @@ router.delete('/', async (req, res)=> {
                 message : "Server Error"
             });
         }else{
-            let lQuery = `UPDATE eco.Board SET board_cmtnum = board_cmtnum-1 WHERE board_idx =?`;
-            let lResult = await db.queryParam_Arr(lQuery,[board_idx]);
-            if(!lResult){
+            let countCommentQuery = 'SELECT count(c.cmt_idx) cmt_cnt FROM eco.Comment as c WHERE c.board_idx = ?';
+            let countCommentResult = await db.queryParam_Arr(countCommentQuery, [board_idx]);
+
+            let updateboardQuery = 'UPDATE eco.Board SET board_cmtnum = ? WHERE board_idx = ?';
+            let updateboardResult = await db.queryParam_Arr(updateboardQuery, [countCommentResult[0].cmt_cnt, board_idx]);
+
+            if(!updateboardResult){
                 res.status(500).send({
                     message : "cmt sub  SERVER ERR"
                 })
