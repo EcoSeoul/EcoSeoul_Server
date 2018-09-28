@@ -12,54 +12,63 @@ router.post('/',async(req, res)=>{
             message : "Null value"
         });
     }else{
-        let likenum = `SELECT like_flag FROM eco.Thumb where board_idx = ?  and user_idx =?`
-        let likeResult = await db.queryParam_Arr(likenum,[board_idx,user_idx]);
-        if(!likeResult){
+        let selectLikeQuery = `SELECT * FROM eco.Thumb where board_idx = ?  and user_idx =?`
+        let selectLikeResult = await db.queryParam_Arr( selectLikeQuery, [board_idx, user_idx]);
+        
+        if(!selectLikeResult){
             res.status(500).send({
                 message : "Server Error"
             });
         }else{
-            if(likeResult == 0 ){
-                let insertQuery = `INSERT INTO eco.Thumb (board_idx,user_idx,like_flag) VALUES (?,?,1)`;
-                let insertResult = await db.queryParam_Arr(insertQuery,[board_idx, user_idx]);
+            if (selectLikeResult.length == 1) {
+                let deleteThumbQuery = 'DELETE FROM eco.Thumb WHERE board_idx = ? AND user_idx = ?;';
+                let deleteThumbResult = await db.queryParam_Arr(deleteThumbQuery, [board_idx, user_idx]);
 
-
-                if(!insertResult){
+                if (!deleteThumbResult) {
                     res.status(500).send({
-                        message : "server Err"
+                        message : "Internal Server Error : Delete Thumb"
                     });
-                }else{
-                    let mQuery = `UPDATE eco.Board SET board_like = board_like+1 WHERE board_idx= ?`;
-                    let mResult = await db.queryParam_Arr(mQuery,[board_idx]);
-                    if(!mResult){
+                } else {
+                    let cntLikeQuery = 'SELECT count(t.like_idx) likes FROM eco.Thumb AS t WHERE board_idx = ?;';
+                    let cntLikeResult = await db.queryParam_Arr(cntLikeQuery, [board_idx]);
+    
+                    let updateBoardLikeQuery = 'UPDATE eco.Board SET board_like = ? WHERE board_idx = ?';
+                    let updateBoardLikeResult = await db.queryParam_Arr(updateBoardLikeQuery, [cntLikeResult[0].likes, board_idx]);
+
+                    if (!updateBoardLikeResult) {
                         res.status(500).send({
-                            message : "like flag 1  SERVER err "
-                        })
-                    }else{
-                    res.status(201).send({
-                        message : "ok",
-                        flag : "1"
-                    });
+                            message : "Internal Server Error : Update Board Like Cnt"
+                        });
+                    } else {
+                        res.status(200).send({
+                            message : "Successfully Delete Thumb"
+                        });
+                    }
                 }
-            }
-            }
-            else if(likeResult[0].like_flag ==1){
-                let mQuery = `UPDATE eco.Board SET board_like = board_like-1 WHERE board_idx =?`;
-                let mReuslt = await db.queryParam_Arr(mQuery,[board_idx]);
-
-
-                let lQuery = `DELETE FROM eco.Thumb WHERE board_idx = ? and user_idx =?`;
-                let lResult = await db.queryParam_Arr(lQuery,[board_idx,user_idx]);
-
-                if(!mReuslt || !lResult){
+            } else {
+                let addThumbQuery = 'INSERT INTO eco.Thumb VALUES (null, 1, ?, ?);';
+                let addThumbResult = await db.queryParam_Arr(addThumbQuery, [user_idx, board_idx]);
+                
+                if (!addThumbResult) {
                     res.status(500).send({
-                        message : "server ERRor!"
+                        message : "Internal Server Error : Add Thumb"
                     });
-                }else{
-                    res.status(201).send({
-                        message : "ok",
-                        flag :"0"
-                    });
+                } else {
+                    let cntLikeQuery = 'SELECT count(t.like_idx) likes FROM eco.Thumb AS t WHERE board_idx = ?;';
+                    let cntLikeResult = await db.queryParam_Arr(cntLikeQuery, [board_idx]);
+    
+                    let updateBoardLikeQuery = 'UPDATE eco.Board SET board_like = ? WHERE board_idx = ?';
+                    let updateBoardLikeResult = await db.queryParam_Arr(updateBoardLikeQuery, [cntLikeResult[0].likes, board_idx]);
+
+                    if (!updateBoardLikeResult) {
+                        res.status(500).send({
+                            message : "Internal Server Error : Update Board Like Cnt"
+                        });
+                    } else {
+                        res.status(200).send({
+                            message : "Successfully Add Thumb"
+                        });
+                    }
                 }
             }
         }
