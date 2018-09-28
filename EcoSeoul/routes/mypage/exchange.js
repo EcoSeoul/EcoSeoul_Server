@@ -27,10 +27,14 @@ router.post('/', async (req, res) =>{
                message : "You can exchange money only if you have more than 20,000 points in mileage."
            });
        } else if (user_mileage < exchange) {
-        res.status(400).send({
-            message : "Insufficient miles to switch"
-        });
-       }else {
+            res.status(400).send({
+                message : "Insufficient miles to switch"
+            });
+       } else if (exchange < 1000) {
+            res.status(400).send({
+                message : "The minimum exchange amount is 1000"
+            });
+       } else {
            let mileage_date = moment().format('YYYY-MM-DD');
            let mileage_usage = "에코마일리지 " + exchange + "원 에코머니로 전환";
 
