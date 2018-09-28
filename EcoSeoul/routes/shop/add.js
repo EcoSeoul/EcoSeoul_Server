@@ -15,18 +15,18 @@ router.post('/', upload.single('goods_img'), async (req, res) => {
     let goods_price = parseInt(req.body.goods_price);
     let goods_content = req.body.goods_content
     let goods_img = null;
-
+    let goods_company = req.body.goods_company;
     if (req.file != undefined) {
         goods_img = req.file.location;
     }
 
-    if (!goods_name || !goods_price) {
+    if (!goods_name || !goods_price || !goods_company) {
         res.status(400).send({
             message : "Null Value"
         });
     } else {
-        let insertGoodsQuery = 'INSERT INTO eco.shop (goods_name, goods_price, goods_content, goods_img) VALUES (?, ?, ?, ?)';
-        let insertGoodsResult = await db.queryParam_Arr(insertGoodsQuery, [goods_name, goods_price, goods_content, goods_img]);
+        let insertGoodsQuery = 'INSERT INTO eco.shop (goods_name, goods_price, goods_content, goods_company ,goods_img) VALUES (?, ?, ?, ?, ?)';
+        let insertGoodsResult = await db.queryParam_Arr(insertGoodsQuery, [goods_name, goods_price, goods_content, goods_company , goods_img]);
 
         if (!insertGoodsResult) {
             res.status(500).send({
