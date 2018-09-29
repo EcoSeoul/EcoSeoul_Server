@@ -13,10 +13,13 @@ router.get('/:board_idx/:user_idx', async(req, res)=> {
             message : "NULL VALUE"
         });
     }else{
-      let boardContentQuery = `SELECT b.*, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE board_idx = ?`;
+      let boardContentQuery = `SELECT b.board_idx,b.board_title,b.board_content,DATE_FORMAT(board_date,'%y/%m/%d')as board_date,b.user_idx,
+      b.board_like,b.board_cmtnum, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE
+       board_idx = ?`
       let boardContentResult = await db.queryParam_Arr(boardContentQuery,[board_idx]);
 
-      let commentQuery = `SELECT c.*, u.user_ID FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ?`;
+      let commentQuery = `SELECT c.cmt_idx, c.cmt_content,DATE_FORMAT(cmt_date,'%y/%m/%d') as cmt_date,c.user_idx,c.board_idx, u.user_ID 
+      FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ? `;
       let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
 
       if (boardContentResult[0].user_idx == user_idx) {
