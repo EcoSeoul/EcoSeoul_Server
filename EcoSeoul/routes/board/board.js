@@ -55,7 +55,7 @@ router.get('/:board_idx/:user_idx', async(req, res)=> {
 router.post('/', async(req, res)=> {
     let board_title = req.body.board_title;
     let board_content = req.body.board_content;
-    let currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    let currentTime = moment().format('YYYY-MM-DD');
     let user_idx = req.body.user_idx;
     
 

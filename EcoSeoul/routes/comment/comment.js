@@ -6,7 +6,7 @@ const moment = require('moment');
 //댓글 작성
 router.post('/',async(req, res)=>{
 
-    let cmt_date = moment().format('YYYY-MM-DD HH:mm:ss');
+    let cmt_date = moment().format('YYYY-MM-DD');
     let user_idx = req.body.user_idx;
     let cmt_content = req.body.cmt_content;
     let board_idx = req.body.board_idx;
