@@ -1,121 +1,134 @@
 const express = require('express');
-const router = express.Router(); 
+const router = express.Router();
 const db = require('../../module/pool.js');
 const moment = require('moment');
 
 //게시글 상세보기
-router.get('/:board_idx/:user_idx', async(req, res)=> {
+router.get('/:board_idx/:user_idx', async (req, res) => {
     let board_idx = req.params.board_idx;
     let user_idx = parseInt(req.params.user_idx);
 
-    if(!board_idx){
+    if (!board_idx) {
         res.status(400).send({
-            message : "NULL VALUE"
+            message: "NULL VALUE"
         });
-    }else{
-      let boardContentQuery = `SELECT b.board_idx,b.board_title,b.board_content,DATE_FORMAT(board_date,'%y/%m/%d')as board_date,b.user_idx,
-      b.board_like,b.board_cmtnum, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE
+    } else {
+        let boardContentQuery = `SELECT b.board_idx, b.board_title, b.board_content, DATE_FORMAT(board_date,'%y/%m/%d') as board_date, b.user_idx,
+      b.board_like, b.board_cmtnum, u.user_ID FROM eco.Board as b JOIN eco.User as u ON b.user_idx = u.user_idx WHERE
        board_idx = ?`
-      let boardContentResult = await db.queryParam_Arr(boardContentQuery,[board_idx]);
+        let boardContentResult = await db.queryParam_Arr(boardContentQuery, [board_idx]);
 
-      let commentQuery = `SELECT c.cmt_idx, c.cmt_content,DATE_FORMAT(cmt_date,'%y/%m/%d') as cmt_date,c.user_idx,c.board_idx, u.user_ID 
-      FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ? `;
-      let commentResult = await db.queryParam_Arr(commentQuery,[board_idx]);
+        let selectLikeFlagQuery = 'SELECT like_flag FROM eco.Thumb WHERE board_idx = ? AND user_idx = ?';
+        let selectLikeFlagResult = await db.queryParam_Arr(selectLikeFlagQuery, [boardContentResult[0].board_idx, user_idx]);
 
-      if (boardContentResult[0].user_idx == user_idx) {
-          boardContentResult[0].writer_check = true;
-      } else {
-        boardContentResult[0].writer_check = false;
-      }    
-
-      for (let i = 0; i < commentResult.length; i++) {
-        if (commentResult[i].user_idx == user_idx) {
-            commentResult[i].writer_check = true;
+        if (selectLikeFlagResult.length == 0) {
+            boardContentResult[0].likeFlag = false;
         } else {
-            commentResult[i].writer_check = false;
+            if (selectLikeFlagResult[0].like_flag == 1) {
+                boardContentResult[0].likeFlag = true;
+            }
         }
-    }
 
-      if(!boardContentResult || !commentResult){
-          res.status(500).send({
-              message : "Server Error"
-          });
-      }else{
-          res.status(200).send({
-              message : "Success",
-              board_Result: boardContentResult,
-              comment_Result : commentResult
-          });
-      }
+
+
+        let commentQuery = `SELECT c.cmt_idx, c.cmt_content, DATE_FORMAT(cmt_date,'%y/%m/%d') as cmt_date, c.user_idx, c.board_idx, u.user_ID 
+      FROM eco.Comment as c JOIN eco.User as u ON c.user_idx = u.user_idx WHERE c.board_idx = ? `;
+        let commentResult = await db.queryParam_Arr(commentQuery, [board_idx]);
+
+        if (boardContentResult[0].user_idx == user_idx) {
+            boardContentResult[0].writer_check = true;
+        } else {
+            boardContentResult[0].writer_check = false;
+        }
+
+        for (let i = 0; i < commentResult.length; i++) {
+            if (commentResult[i].user_idx == user_idx) {
+                commentResult[i].writer_check = true;
+            } else {
+                commentResult[i].writer_check = false;
+            }
+        }
+
+        if (!boardContentResult || !commentResult) {
+            res.status(500).send({
+                message: "Server Error"
+            });
+        } else {
+            res.status(200).send({
+                message: "Success",
+                board_Result: boardContentResult,
+                comment_Result: commentResult
+            });
+        }
     }
 
 });
 
 //게시글 작성
-router.post('/', async(req, res)=> {
+router.post('/', async (req, res) => {
     let board_title = req.body.board_title;
     let board_content = req.body.board_content;
     let currentTime = moment().format('YYYY-MM-DD');
     let user_idx = req.body.user_idx;
-    
 
-    if(!user_idx){
+
+    if (!user_idx) {
         res.status(400).send({
-            message : "NUll value"
+            message: "NUll value"
         });
-    }else{
+    } else {
         let requestQuery = 'INSERT INTO eco.Board (board_title, board_content,board_date,user_idx) VALUES (?,?,?,?)'
-        let requestResult = await db.queryParam_Arr(requestQuery, [board_title,board_content,currentTime,user_idx]);
-    
-    if(!requestResult){
-        res.status(500).send({
-            message : "Server Error"
-        });
-    }else{
-        res.status(201).send({
-            message : "OK"
-        });
-    }
-    
+        let requestResult = await db.queryParam_Arr(requestQuery, [board_title, board_content, currentTime, user_idx]);
+
+        if (!requestResult) {
+            res.status(500).send({
+                message: "Server Error"
+            });
+        } else {
+            res.status(201).send({
+                message: "OK"
+            });
+        }
+
     }
 });
 
 //게시글 수정
-router.put('/',async(req, res)=>{
+router.put('/', async (req, res) => {
     let user_idx = req.body.user_idx;
     let board_idx = req.body.board_idx;
     let selectboardQuery = 'SELECT user_idx FROM eco.Board WHERE user_idx = ?'
-    let selectboardResult = await db.queryParam_Arr(selectboardQuery,[user_idx]);
+    let selectboardResult = await db.queryParam_Arr(selectboardQuery, [user_idx]);
 
-    if(!selectboardResult){
+    if (!selectboardResult) {
         res.status(500).send({
-            message : "Server error"
+            message: "Server error"
         });
-    }else{
+    } else {
         let boardCheckQuery = 'SELECT board_idx FROM eco.Board WHERE board_idx = ?'
-        let boardCheckResult = await db.queryParam_Arr(boardCheckQuery,[board_idx]);
-        if(!boardCheckResult){
+        let boardCheckResult = await db.queryParam_Arr(boardCheckQuery, [board_idx]);
+        if (!boardCheckResult) {
             res.status(400).send({
-                message : " null value"
+                message: " null value"
             });
-        }else{
+        } else {
             let board_title = req.body.board_title;
             let board_content = req.body.board_content;
             let updateQuery = `UPDATE eco.Board SET board_title = ?, board_content = ? WHERE board_idx = ?`
-            let updateResult = await db.queryParam_Arr(updateQuery,[board_title, board_content, board_idx]);
+            let updateResult = await db.queryParam_Arr(updateQuery, [board_title, board_content, board_idx]);
 
-            if(!board_title || !board_content){
+            if (!board_title || !board_content) {
                 res.status(400).send({
-                    message : "null value"
+                    message: "null value"
                 });
-            }else{
-                if(!updateResult){
+            } else {
+                if (!updateResult) {
                     res.status(500).send({
-                        message : "SERver error"
+                        message: "SERver error"
                     });
-                }else{
+                } else {
                     res.status(201).send({
-                        message : "OK"
+                        message: "OK"
                     });
                 }
             }
@@ -124,25 +137,25 @@ router.put('/',async(req, res)=>{
 });
 
 //게시글 삭제
-router.delete('/',async(req, res)=> {
+router.delete('/', async (req, res) => {
     let user_idx = req.body.user_idx;
     let board_idx = req.body.board_idx;
 
-    if(!board_idx || !user_idx){
+    if (!board_idx || !user_idx) {
         res.status(400).send({
-            message : "NUll value"
+            message: "NUll value"
         });
-    }else{
+    } else {
         let deleteQuery = `DELETE FROM eco.Board WHERE board_idx =? and user_idx = ?`
-        let deleteResult = await db.queryParam_Arr(deleteQuery,[board_idx,user_idx]);
+        let deleteResult = await db.queryParam_Arr(deleteQuery, [board_idx, user_idx]);
 
-        if(!deleteResult){
+        if (!deleteResult) {
             res.status(500).send({
-                message : "Server Error"
+                message: "Server Error"
             });
-        }else{
+        } else {
             res.status(201).send({
-                message : "OK"
+                message: "OK"
             });
         }
     }
