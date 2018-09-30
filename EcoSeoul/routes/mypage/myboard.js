@@ -12,7 +12,7 @@ router.get('/:user_idx',async(req, res)=> {
         });
     }else{
         let getmytextQuery = `SELECT DISTINCT Board.board_idx,Board.board_title,Board.board_content,
-        Board.board_date,Board.user_idx,Board.board_like, User.user_name,Board.board_cmtnum FROM eco.Board, eco.User WHERE User.user_idx = Board.user_idx and User.user_idx = ? ORDER BY Board.board_idx DESC;`;
+        DATE_FORMAT(Board.board_date,'%y/%m/%d') as board_date,Board.user_idx,Board.board_like, User.user_name,Board.board_cmtnum FROM eco.Board, eco.User WHERE User.user_idx = Board.user_idx and User.user_idx = ? ORDER BY Board.board_idx DESC;`;
         let getmytextList = await db.queryParam_Arr(getmytextQuery,[user_idx]);
         if(!getmytextList){
             res.status(500).send({
