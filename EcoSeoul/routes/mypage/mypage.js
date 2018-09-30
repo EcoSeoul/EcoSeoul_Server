@@ -56,11 +56,15 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
             });
         } else {
             let used_milage = 0;
+            let saved_mileage = 0;
 
             if (eco_value == 0) {
                 for (let i = 0; i < selectMileageResult.length; i++) {
                     if (selectMileageResult[i].mileage_withdraw != null) {
                         used_milage += selectMileageResult[i].mileage_withdraw;
+                    }
+                    if (selectMileageResult[i].mileage_deposit != null) {
+                        saved_mileage += selectMileageResult[i].mileage_deposit;
                     }
                 }
             } else {
@@ -68,13 +72,17 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
                     if (selectMileageResult[i].money_withdraw != null) {
                         used_milage += selectMileageResult[i].money_withdraw;
                     }
+                    if (selectMileageResult[i].money_deposit != null) {
+                        saved_mileage += selectMileageResult[i].money_deposit;
+                    }
                 }
             }
 
             res.status(200).send({
                 message : "Successfully Get Data",
                 milage_total_usage : selectMileageResult,
-                used_milage : used_milage
+                used_milage : used_milage,
+                saved_mileage : saved_mileage
             });
         }
 
