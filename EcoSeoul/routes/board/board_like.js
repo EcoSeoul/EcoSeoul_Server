@@ -20,7 +20,7 @@ router.post('/',async(req, res)=>{
                 message : "Server Error"
             });
         }else{
-            if (selectLikeResult.length == 1) {
+            if (selectLikeResult.length >= 1) {
                 let deleteThumbQuery = 'DELETE FROM eco.Thumb WHERE board_idx = ? AND user_idx = ?;';
                 let deleteThumbResult = await db.queryParam_Arr(deleteThumbQuery, [board_idx, user_idx]);
 
