@@ -43,9 +43,9 @@ router.get('/usage/:user_idx/:eco_value', async (req, res) => {
         let selectMileageQuery = "";
 
         if (eco_value == 0) {
-            selectMileageQuery = 'SELECT * FROM Mileage WHERE user_idx = ?';
+            selectMileageQuery = 'SELECT * FROM Mileage WHERE user_idx = ? ORDER BY mileage_date DESC';
         } else {
-            selectMileageQuery = 'SELECT * FROM Money WHERE user_idx = ?';
+            selectMileageQuery = 'SELECT * FROM Money WHERE user_idx = ? ORDER BY money_date DESC';
         }
 
         let selectMileageResult = await db.queryParam_Arr(selectMileageQuery, [user_idx]);
