@@ -77,7 +77,7 @@
 
 ## 개발자
 
-* **김현진** ([hyunjkluz](https://github.com/hyunjkluz)) : 작성자
+* **김현진** ([hyunjkluz](https://github.com/hyunjkluz), HyunJin) : 작성자
 * **한정민** ([han51361](https://github.com/han51361))
 
 [기여자 목록](https://github.com/EcoSeoul/Team_Server/graphs/contributors)을 확인하여 이 프로젝트에 참가하신 분들을 보실 수 있습니다.
